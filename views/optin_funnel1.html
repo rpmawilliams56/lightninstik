@@ -1,0 +1,39 @@
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  document.addEventListener("wpformsAjaxSubmitSuccess", function (event) {
+
+    const form = event.target;
+    if (!form) return;
+
+    const first = form.querySelector('input[name*="first"]')?.value || "";
+    const last = form.querySelector('input[name*="last"]')?.value || "";
+    const email = form.querySelector('input[type="email"]')?.value || "";
+    const phone = form.querySelector('input[type="tel"]')?.value || "";
+
+    const params = new URLSearchParams(window.location.search);
+
+    fetch("https://YOUR_BACKEND_URL/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        first_name: first,
+        last_name: last,
+        email,
+        phone,
+
+        // manual tag from WPForms field (you already handle this)
+        source: form.querySelector('input[name*="source"]')?.value || "",
+
+        // optional tracking
+        utm_source: params.get("utm_source"),
+        utm_campaign: params.get("utm_campaign"),
+        utm_medium: params.get("utm_medium"),
+        qr_id: params.get("qr_id")
+      })
+    });
+
+  });
+
+});
+</script>
